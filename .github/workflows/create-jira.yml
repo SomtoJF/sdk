@@ -8,7 +8,7 @@ on:
 jobs:
   create_jira:
     name: Create Jira Ticket
-    runs-on: ubuntu-latest-large
+    runs-on: ubuntu-latest
     environment: IssueTracker
     steps:
       - name: Checkout

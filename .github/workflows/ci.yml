@@ -11,7 +11,7 @@ env:
 jobs:
   analytics-node:
     name: 'analytics-node QA (Node.js v${{ matrix.node-version }})'
-    runs-on: ubuntu-latest-large
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [20]
@@ -44,7 +44,7 @@ jobs:
 
   analytics-node-cf-workers:
     name: 'analytics-node QA (Cloudflare Workers)'
-    runs-on: ubuntu-latest-large
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [20]
@@ -66,7 +66,7 @@ jobs:
 
   monorepo-qa:
     name: '[Monorepo] QA'
-    runs-on: ubuntu-latest-large
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744  # v3
       - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610  # v3
@@ -81,7 +81,7 @@ jobs:
 
   browser-lint-test:
     name: '[Browser] Lint + Test'
-    runs-on: ubuntu-latest-large
+    runs-on: ubuntu-latest
     env:
       # Real Playwright browser + full network access: unlike the locked-down
       # Buildkite queue this replaces, GH-hosted runners have open egress, so
@@ -100,7 +100,7 @@ jobs:
       # names the old package by exact name, and apt won't resolve that to
       # an already-installed provider for a direct install (only for
       # dependency resolution), so pre-installing libasound2t64 doesn't
-      # help. ubuntu-latest-large already ships most Chromium runtime libs,
+      # help. ubuntu-latest already ships most Chromium runtime libs,
       # so skip --with-deps and only fetch the browser binary.
       - run: npx playwright install chromium
       - run: yarn run -T browser exec make ci
@@ -114,7 +114,7 @@ jobs:
 
   core-lint-test:
     name: '[Core] Lint + Test'
-    runs-on: ubuntu-latest-large
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744  # v3
       - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610  # v3
@@ -136,7 +136,7 @@ jobs:
 
   misc-utils-lint-test:
     name: '[Misc Utils] Lint + Test'
-    runs-on: ubuntu-latest-large
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744  # v3
       - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610  # v3
@@ -151,7 +151,7 @@ jobs:
 
   consent-lint-test:
     name: '[Consent] Lint + Test'
-    runs-on: ubuntu-latest-large
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744  # v3
       - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610  # v3
@@ -165,7 +165,7 @@ jobs:
 
   consent-integration-tests:
     name: '[Consent] Integration Tests'
-    runs-on: ubuntu-latest-large
+    runs-on: ubuntu-latest
     env:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 0
     steps:
@@ -180,14 +180,14 @@ jobs:
       # names the old package by exact name, and apt won't resolve that to
       # an already-installed provider for a direct install (only for
       # dependency resolution), so pre-installing libasound2t64 doesn't
-      # help. ubuntu-latest-large already ships most Chromium runtime libs,
+      # help. ubuntu-latest already ships most Chromium runtime libs,
       # so skip --with-deps and only fetch the browser binary.
       - run: npx playwright install chromium
       - run: yarn turbo run --filter='./packages/consent/consent-tools-integration-tests' test:int
 
   browser-qa-e2e:
     name: '[Browser] QA / E2E'
-    runs-on: ubuntu-latest-large
+    runs-on: ubuntu-latest
     # Disabled pending a real plan for this suite: it needs
     # QA_SOURCES/QA_SAMPLES/STATS_WRITEKEY as repo secrets (see
     # packages/browser/qa/README.md), and without them it just fails on
@@ -210,14 +210,14 @@ jobs:
       # names the old package by exact name, and apt won't resolve that to
       # an already-installed provider for a direct install (only for
       # dependency resolution), so pre-installing libasound2t64 doesn't
-      # help. ubuntu-latest-large already ships most Chromium runtime libs,
+      # help. ubuntu-latest already ships most Chromium runtime libs,
       # so skip --with-deps and only fetch the browser binary.
       - run: npx playwright install chromium
       - run: yarn run -T browser exec make test-qa
 
   browser-destinations-qa-e2e:
     name: '[Browser] Destinations QA / E2E'
-    runs-on: ubuntu-latest-large
+    runs-on: ubuntu-latest
     # Disabled pending a real plan for this suite: it needs
     # QA_SOURCES/QA_SAMPLES/STATS_WRITEKEY as repo secrets (see
     # packages/browser/qa/README.md), and without them it just fails on
@@ -239,14 +239,14 @@ jobs:
       # names the old package by exact name, and apt won't resolve that to
       # an already-installed provider for a direct install (only for
       # dependency resolution), so pre-installing libasound2t64 doesn't
-      # help. ubuntu-latest-large already ships most Chromium runtime libs,
+      # help. ubuntu-latest already ships most Chromium runtime libs,
       # so skip --with-deps and only fetch the browser binary.
       - run: npx playwright install chromium
       - run: yarn run -T browser exec make test-qa-destinations
 
   browser-integration-tests:
     name: '[Browser] Integration Tests'
-    runs-on: ubuntu-latest-large
+    runs-on: ubuntu-latest
     env:
       COVERAGE: false
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 0
@@ -262,14 +262,14 @@ jobs:
       # names the old package by exact name, and apt won't resolve that to
       # an already-installed provider for a direct install (only for
       # dependency resolution), so pre-installing libasound2t64 doesn't
-      # help. ubuntu-latest-large already ships most Chromium runtime libs,
+      # help. ubuntu-latest already ships most Chromium runtime libs,
       # so skip --with-deps and only fetch the browser binary.
       - run: npx playwright install chromium
       - run: yarn turbo run --filter=@internal/browser-integration-tests test:int
 
   playgrounds-lint-test:
     name: '[Playgrounds] Lint + Test'
-    runs-on: ubuntu-latest-large
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744  # v3
       - uses: actions/setup-node@3235b876344d2a9aa001b8d1453c930bba69e610  # v3

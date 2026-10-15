@@ -18,7 +18,7 @@ on:
 
 jobs:
   e2e-tests:
-    runs-on: ubuntu-latest-large
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         mode:
