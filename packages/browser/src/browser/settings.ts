@@ -69,7 +69,7 @@ export interface RemoteSegmentIOIntegrationSettings
 
   /**
    * Host of the segment cdn - this may need to be manually enabled on the source.
-   * @default 'api.segment.io/v1'
+   * @default 'data.useferno.com'
    */
   apiHost?: string
   addBundledMetadata?: boolean

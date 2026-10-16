@@ -56,7 +56,7 @@ SDK from requesting source settings from Segment's CDN.
 ```ts
 import { AnalyticsBrowser } from '@fernohq/analytics-next'
 
-const FERNO_API_URL = 'https://api.useferno.com'
+const FERNO_API_URL = 'https://data.useferno.com'
 const FERNO_API_KEY = 'ferno_pk_your_project_key'
 
 export const analytics = AnalyticsBrowser.load(
@@ -135,7 +135,7 @@ import { Analytics } from '@fernohq/analytics-node'
 
 const analytics = new Analytics({
   writeKey: process.env.FERNO_API_KEY!,
-  host: process.env.FERNO_API_URL ?? 'https://api.useferno.com',
+  host: process.env.FERNO_API_URL ?? 'https://data.useferno.com',
   path: '/events',
   authMode: 'bearer',
   flushAt: 10,

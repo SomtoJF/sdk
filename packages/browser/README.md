@@ -34,7 +34,7 @@ const analytics = AnalyticsBrowser.load(
   {
     integrations: {
       'Segment.io': {
-        apiHost: 'https://api.useferno.com',
+        apiHost: 'https://data.useferno.com',
         apiPath: '/events',
         authMode: 'bearer',
         deliveryStrategy: {

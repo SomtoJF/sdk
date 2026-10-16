@@ -27,7 +27,7 @@ import { Analytics } from '@fernohq/analytics-node'
 
 const analytics = new Analytics({
   writeKey: process.env.FERNO_API_KEY!,
-  host: process.env.FERNO_API_URL ?? 'https://api.useferno.com',
+  host: process.env.FERNO_API_URL ?? 'https://data.useferno.com',
   path: '/events',
   authMode: 'bearer',
 })

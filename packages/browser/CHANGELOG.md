@@ -1,5 +1,11 @@
 # @fernohq/analytics-next
 
+## 2.0.0
+
+### Major Changes
+
+- a7de7ad: Rewrite to integrate directly with ferno's infra
+
 ## 1.84.5
 
 ### Patch Changes
