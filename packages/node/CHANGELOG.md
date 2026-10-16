@@ -1,4 +1,10 @@
-# @segment/analytics-node
+# @fernohq/analytics-node
+
+## 3.1.1
+
+### Patch Changes
+
+- Rebrand package documentation for Ferno.
 
 ## 3.1.0
 

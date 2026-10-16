@@ -1,4 +1,10 @@
-# @segment/analytics-next
+# @fernohq/analytics-next
+
+## 1.84.5
+
+### Patch Changes
+
+- Republish Ferno browser instrumentation package.
 
 ## 1.84.4
 
