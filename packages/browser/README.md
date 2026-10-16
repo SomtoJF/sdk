@@ -248,3 +248,27 @@ Then, make your changes and test them out in the test app!
 
 
 
+# Ferno instrumentation
+
+The browser SDK keeps instrumentation opt-in. Configure it at load time:
+
+```ts
+AnalyticsBrowser.load({ writeKey }, {
+  instrumentation: {
+    autocapture: true,
+    rageClicks: true,
+    deadClicks: true,
+    navigation: { enabled: true, hash: true },
+    exceptions: { enabled: true, console: false },
+    heatmaps: { enabled: true, flushInterval: 10000 },
+  },
+})
+```
+
+Generated event names are `autocapture`, `rage_click`, `dead_click`, `page_view`, `page_leave`, `exception`, and `heatmap`. All generated events use `track`; generated navigation events do not call `page`. Existing manual and initial pageviews remain authoritative.
+
+Runtime controls are available on both `Analytics` and buffered `AnalyticsBrowser`: `startInstrumentation`, `stopInstrumentation`, and `start/stop` methods for autocapture, rage clicks, dead clicks, navigation, exceptions, and heatmaps. Defaults are disabled. Rage clicks default to 3 clicks within 1000ms and 30px. Exceptions are limited to five identical signatures per 60 seconds.
+
+Element metadata is bounded. Password/input values, `data-ph-mask`, `.ph-mask`, and sensitive text are masked. Heatmap points contain the normalized URL, point type, viewport/document coordinates and dimensions, scroll state, fixed/sticky state, fingerprint, offsets, and timestamp. The SDK only captures and sends points; it never reads dashboard aggregates.
+
+Heatmap preview pages use `ferno_preview=1` with a nonce, project, and dashboard origin. The iframe handshake validates source window, exact origin, nonce, project, and normalized URL before points are displayed. Preview targets must allow the dashboard origin through CSP `frame-ancestors`; cross-origin pages cannot be inspected by dashboard JavaScript, so the SDK renders the overlay in the target page.

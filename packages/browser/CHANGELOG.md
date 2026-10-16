@@ -1,5 +1,11 @@
 # @segment/analytics-next
 
+## 1.84.4
+
+### Patch Changes
+
+- Added Ferno browser instrumentation and heatmaps.
+
 ## 1.84.3
 
 ### Patch Changes

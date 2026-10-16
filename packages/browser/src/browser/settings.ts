@@ -13,6 +13,7 @@ import { HighEntropyHint } from '../lib/client-hints/interfaces'
 import { IntegrationsOptions } from '@segment/analytics-core'
 import { SegmentioSettings } from '../plugins/segmentio'
 import { HttpConfig } from '../plugins/segmentio/shared-dispatcher'
+import { InstrumentationOptions } from '../core/instrumentation'
 
 interface VersionSettings {
   version?: string
@@ -216,6 +217,7 @@ export interface IntegrationsInitOptions extends IntegrationsOptions {
 }
 
 export interface InitOptions {
+  instrumentation?: InstrumentationOptions
   /**
    * Disables storing any data on the client-side via cookies or localstorage.
    * Defaults to `false`.
