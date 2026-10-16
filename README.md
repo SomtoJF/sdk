@@ -87,6 +87,35 @@ analytics.track('signup', { plan: 'pro' })
 analytics.identify('user-123', { email: 'user@example.com' })
 ```
 
+### Identify vs. alias
+
+Use `identify` when an anonymous visitor becomes a known user. It connects the
+current `anonymousId` and its unresolved events to the supplied `userId`:
+
+```ts
+analytics.identify('user-123')
+```
+
+Call `identify` after sign-up, login, or session restoration—whenever the app
+knows which user is using the current device or browser.
+
+Use `alias` only when an existing `userId` is being replaced by another
+`userId`. The `previousId` must be a known user ID, not an anonymous ID:
+
+```ts
+analytics.alias('user-456', 'user-123')
+```
+
+Use `alias` when two known IDs should represent the same person, such as after
+merging duplicate accounts or migrating from an old ID format to a new one.
+Do not use it for ordinary account switching when the accounts belong to
+different people; use `identify` with the current user's ID instead.
+
+In short:
+
+- `identify`: anonymous ID -> user ID
+- `alias`: previous user ID -> new user ID
+
 The browser API must allow CORS requests from the application origin. Never
 embed a credential that is not intended for browser use.
 
