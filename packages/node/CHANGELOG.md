@@ -1,5 +1,11 @@
 # @fernohq/analytics-node
 
+## 4.0.1
+
+### Patch Changes
+
+- Send Ferno events using the batch envelope.
+
 ## 4.0.0
 
 ### Major Changes

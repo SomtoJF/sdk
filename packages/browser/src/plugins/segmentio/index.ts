@@ -135,7 +135,8 @@ export function segmentio(
           resolvedHttpConfig,
           authMode,
           writeKey,
-          apiPath !== undefined
+          apiPath !== undefined,
+          apiPath
         )
 
   async function send(ctx: Context): Promise<Context> {

@@ -42,6 +42,11 @@ describe('Segment.io', () => {
     Object.keys(cookie.get()).map((key) => cookie.remove(key))
   }
 
+  function eventBody(params: RequestInit): any {
+    const body = JSON.parse(params.body as string)
+    return body.batch?.[0] ?? body
+  }
+
   afterEach(async () => {
     analytics.reset()
     resetCookies()
@@ -72,6 +77,16 @@ describe('Segment.io', () => {
       const [url] = spyMock.mock.calls[0]
       expect(url).toMatchInlineSnapshot(`"http://data.useferno.com/events"`)
     })
+  })
+
+  it('wraps single events for Ferno events endpoint', async () => {
+    await analytics.track('signup')
+
+    const [_, params] = spyMock.mock.lastCall
+    const body = JSON.parse(params.body)
+    expect(body.batch).toHaveLength(1)
+    expect(body.batch[0].event).toBe('signup')
+    expect(body.sentAt).toBeTruthy()
   })
 
   describe('configuring fetch credentials', () => {
@@ -224,7 +239,7 @@ describe('Segment.io', () => {
       const [url, params] = spyMock.mock.calls[0]
       expect(url).toMatchInlineSnapshot(`"https://data.useferno.com/events"`)
 
-      const body = JSON.parse(params.body)
+      const body = eventBody(params)
 
       assert(body.name === 'name')
       assert(body.category === 'section')
@@ -240,7 +255,7 @@ describe('Segment.io', () => {
       const [url, params] = spyMock.mock.calls[0]
       expect(url).toMatchInlineSnapshot(`"https://data.useferno.com/events"`)
 
-      const body = JSON.parse(params.body)
+      const body = eventBody(params)
 
       assert(body.properties.foo === 'bar')
     })
@@ -253,7 +268,7 @@ describe('Segment.io', () => {
       const [url, params] = spyMock.mock.calls[0]
       expect(url).toMatchInlineSnapshot(`"https://data.useferno.com/events"`)
 
-      const body = JSON.parse(params.body)
+      const body = eventBody(params)
       assert(body.userId === 'id')
       assert(body.traits.trait === true)
       assert(body.context.opt === true)
@@ -266,7 +281,7 @@ describe('Segment.io', () => {
       const [url, params] = spyMock.mock.calls[0]
       expect(url).toMatchInlineSnapshot(`"https://data.useferno.com/events"`)
 
-      const body = JSON.parse(params.body)
+      const body = eventBody(params)
       assert(body.userId === null)
       assert(body.traits.trait === true)
       assert(!body.context.trait)
@@ -281,7 +296,7 @@ describe('Segment.io', () => {
       const [url, params] = spyMock.mock.calls[0]
       expect(url).toMatchInlineSnapshot(`"https://data.useferno.com/events"`)
 
-      const body = JSON.parse(params.body)
+      const body = eventBody(params)
 
       assert(body.event === 'event')
       assert(body.context.opt === true)
@@ -298,7 +313,7 @@ describe('Segment.io', () => {
       const [url, params] = spyMock.mock.calls[0]
       expect(url).toMatchInlineSnapshot(`"https://data.useferno.com/events"`)
 
-      const body = JSON.parse(params.body)
+      const body = eventBody(params)
 
       assert(body.groupId === 'id')
       assert(body.context.opt === true)
@@ -312,7 +327,7 @@ describe('Segment.io', () => {
       const [url, params] = spyMock.mock.calls[0]
       expect(url).toMatchInlineSnapshot(`"https://data.useferno.com/events"`)
 
-      const body = JSON.parse(params.body)
+      const body = eventBody(params)
 
       assert(body.groupId === null)
       assert(body.context.opt === true)
@@ -328,7 +343,7 @@ describe('Segment.io', () => {
       const [url, params] = spyMock.mock.calls[0]
       expect(url).toMatchInlineSnapshot(`"https://data.useferno.com/events"`)
 
-      const body = JSON.parse(params.body)
+      const body = eventBody(params)
       assert(body.previousId === 'from')
       assert(body.userId === 'to')
       assert(body.timestamp)
@@ -341,7 +356,7 @@ describe('Segment.io', () => {
       const [url, params] = spyMock.mock.calls[0]
       expect(url).toMatchInlineSnapshot(`"https://data.useferno.com/events"`)
 
-      const body = JSON.parse(params.body)
+      const body = eventBody(params)
       assert(body.previousId === 'anon-id')
       assert(body.userId === 'to')
       assert(body.timestamp)
@@ -352,7 +367,7 @@ describe('Segment.io', () => {
       const [url, params] = spyMock.mock.calls[0]
       expect(url).toMatchInlineSnapshot(`"https://data.useferno.com/events"`)
 
-      const body = JSON.parse(params.body)
+      const body = eventBody(params)
       assert(body.previousId)
       assert(body.previousId.length === 36)
       assert(body.userId === 'to')
@@ -363,7 +378,7 @@ describe('Segment.io', () => {
       const [url, params] = spyMock.mock.calls[0]
       expect(url).toMatchInlineSnapshot(`"https://data.useferno.com/events"`)
 
-      const body = JSON.parse(params.body)
+      const body = eventBody(params)
       assert(body.previousId === 'previous-id')
       assert(body.userId === 'user-id')
       assert(body.from == null)
@@ -383,7 +398,7 @@ describe('Segment.io', () => {
       const [url, params] = spyMock.mock.calls[0]
       expect(url).toMatchInlineSnapshot(`"https://data.useferno.com/events"`)
 
-      const body = JSON.parse(params.body)
+      const body = eventBody(params)
 
       assert(body.name === 'name')
       assert(body.category === 'section')
@@ -399,7 +414,7 @@ describe('Segment.io', () => {
       const [url, params] = spyMock.mock.calls[0]
       expect(url).toMatchInlineSnapshot(`"https://data.useferno.com/events"`)
 
-      const body = JSON.parse(params.body)
+      const body = eventBody(params)
 
       assert(body.properties.foo === 'bar')
     })

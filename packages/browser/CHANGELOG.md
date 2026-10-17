@@ -1,5 +1,11 @@
 # @fernohq/analytics-next
 
+## 2.0.1
+
+### Patch Changes
+
+- Send Ferno events using the batch envelope.
+
 ## 2.0.0
 
 ### Major Changes
