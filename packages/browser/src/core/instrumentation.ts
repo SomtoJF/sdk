@@ -491,6 +491,7 @@ export class InstrumentationRuntime {
       const context = canvas.getContext('2d')
       if (!context) return
       context.clearRect(0, 0, canvas.width, canvas.height)
+      context.globalCompositeOperation = 'lighter'
       points.forEach((point) => {
         const fixed = point.fixed === true
         const x =
@@ -498,19 +499,18 @@ export class InstrumentationRuntime {
         const y =
           Number(fixed ? point.y : point.documentY) - (fixed ? 0 : scrollY)
         const count = Number(point.count || 1)
+        const radius = Math.min(48, 14 + Math.log2(count + 1) * 8)
+        const gradient = context.createRadialGradient(x, y, 0, x, y, radius)
+        gradient.addColorStop(0, 'rgba(239, 68, 68, 0.7)')
+        gradient.addColorStop(0.35, 'rgba(251, 191, 36, 0.48)')
+        gradient.addColorStop(0.72, 'rgba(34, 197, 94, 0.2)')
+        gradient.addColorStop(1, 'rgba(34, 197, 94, 0)')
         context.beginPath()
-        context.arc(
-          x,
-          y,
-          Math.min(30, 6 + Math.log2(count + 1) * 4),
-          0,
-          Math.PI * 2
-        )
-        context.fillStyle = 'rgba(124, 58, 237, 0.28)'
+        context.arc(x, y, radius, 0, Math.PI * 2)
+        context.fillStyle = gradient
         context.fill()
-        context.strokeStyle = 'rgba(124, 58, 237, 0.75)'
-        context.stroke()
       })
+      context.globalCompositeOperation = 'source-over'
     }
     const sendReady = () => {
       window.parent.postMessage(
