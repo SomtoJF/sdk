@@ -60,6 +60,7 @@ import {
   FernoEventName,
   InstrumentationOptions,
   InstrumentationRuntime,
+  isHeatmapPreview,
 } from '../instrumentation'
 
 export type { InitOptions, AnalyticsSettings }
@@ -137,6 +138,7 @@ export class Analytics
   private eventFactory: EventFactory
   private _debug = false
   private _universalStorage: UniversalStorage
+  private readonly preview = isHeatmapPreview()
   readonly instrumentation: InstrumentationRuntime
 
   initialized = false
@@ -510,6 +512,7 @@ export class Analytics
   ): Promise<DispatchedEvent> {
     const ctx = new Context(event)
     ctx.stats.increment('analytics_js.invoke', 1, [event.type])
+    if (this.preview) return ctx
     if (isOffline() && !this.options.retryQueue) {
       return ctx
     }

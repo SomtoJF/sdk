@@ -1,3 +1,5 @@
+import { normalizeEventUrl } from './page'
+
 export const FERNO_EVENT_NAMES = {
   AUTOCAPTURE: 'autocapture',
   RAGE_CLICK: 'rage_click',
@@ -39,7 +41,6 @@ export interface ElementFingerprint {
   type?: string
   path?: string
 }
-
 const limit = (value: string, size: number) =>
   value.length > size ? `${value.slice(0, size)}…` : value
 
@@ -92,6 +93,14 @@ function enabled(value: boolean | { enabled?: boolean } | undefined): boolean {
 const interactiveSelector =
   'a,button,input,select,textarea,summary,[role], [tabindex]'
 
+export function isHeatmapPreview(): boolean {
+  return (
+    typeof window !== 'undefined' &&
+    window.parent !== window &&
+    new URLSearchParams(window.location.search).get('ferno_preview') === '1'
+  )
+}
+
 export class InstrumentationRuntime {
   private options: InstrumentationOptions
   private active = false
@@ -124,6 +133,7 @@ export class InstrumentationRuntime {
     this.stop()
     this.options = options
     this.active = true
+    if (isHeatmapPreview()) this.setupPreview()
     if (enabled(options.autocapture))
       this.listen(document, 'click', this.captureClick)
     if (enabled(options.rageClicks) || enabled(options.deadClicks)) {
@@ -192,9 +202,14 @@ export class InstrumentationRuntime {
     this.start(this.options)
   }
 
-  private listen(target: EventTarget, name: string, listener: EventListener) {
-    target.addEventListener(name, listener)
-    this.cleanups.push(() => target.removeEventListener(name, listener))
+  private listen(
+    target: EventTarget,
+    name: string,
+    listener: EventListener,
+    options?: boolean | AddEventListenerOptions
+  ) {
+    target.addEventListener(name, listener, options)
+    this.cleanups.push(() => target.removeEventListener(name, listener, options))
   }
 
   private captureClick = (event: Event) => {
@@ -265,6 +280,7 @@ export class InstrumentationRuntime {
       docY = y + window.scrollY
     return {
       url: location.href,
+      normalizedUrl: normalizeEventUrl(location.href),
       viewport: { width: window.innerWidth, height: window.innerHeight },
       document: {
         width: document.documentElement.scrollWidth,
@@ -292,6 +308,7 @@ export class InstrumentationRuntime {
       const previous = this.previousUrl
       this.track(FERNO_EVENT_NAMES.PAGE_LEAVE, {
         url: previous,
+        normalizedUrl: normalizeEventUrl(previous),
         previousPageviewId: this.previousPageviewID,
         previousPathname: new URL(previous).pathname,
         duration: Date.now() - this.pageStartedAt,
@@ -308,6 +325,7 @@ export class InstrumentationRuntime {
       this.pageStartedAt = Date.now()
       this.track(FERNO_EVENT_NAMES.PAGE_VIEW, {
         url,
+        normalizedUrl: normalizeEventUrl(url),
         navigationType: type,
         previousPageviewId: this.previousPageviewID,
         previousPathname: new URL(previous).pathname,
@@ -402,6 +420,7 @@ export class InstrumentationRuntime {
         stack: limit(error.stack || '', 4000),
         source,
         url: location.href,
+        normalizedUrl: normalizeEventUrl(location.href),
         timestamp: new Date(now).toISOString(),
       })
     } finally {
@@ -422,6 +441,7 @@ export class InstrumentationRuntime {
       const rect = target.getBoundingClientRect()
       this.heatmapPoints.push({
         url: location.href,
+        normalizedUrl: normalizeEventUrl(location.href),
         type: 'click',
         x: mouse.clientX,
         y: mouse.clientY,
@@ -451,7 +471,6 @@ export class InstrumentationRuntime {
       if (document.visibilityState === 'hidden') this.flushHeatmap()
     })
     this.listen(window, 'pagehide', () => this.flushHeatmap())
-    this.setupPreview()
   }
   private flushHeatmap() {
     if (this.heatmapPoints.length) {
@@ -461,6 +480,28 @@ export class InstrumentationRuntime {
   }
 
   private setupPreview() {
+    const blockInteraction = (event: Event) => {
+      const target = event.target instanceof Element ? event.target : null
+      const interactive = target ? target.closest(interactiveSelector) : null
+      const isActivation =
+        event.type === 'click' ||
+        event.type === 'auxclick' ||
+        event.type === 'submit'
+      const isPointerActivation =
+        interactive && (event.type === 'mousedown' || event.type === 'pointerdown')
+      const isKeyboardActivation =
+        interactive &&
+        event.type === 'keydown' &&
+        ((event as KeyboardEvent).key === 'Enter' ||
+          (event as KeyboardEvent).key === ' ')
+      if (!isActivation && !isPointerActivation && !isKeyboardActivation) return
+      event.preventDefault()
+      event.stopPropagation()
+    }
+    ;['click', 'auxclick', 'submit', 'mousedown', 'pointerdown', 'keydown'].forEach(
+      (name) => this.listen(window, name, blockInteraction, true)
+    )
+
     const params = new URLSearchParams(location.search)
     if (params.get('ferno_preview') !== '1' || window.parent === window) return
     const nonce = params.get('ferno_nonce'),
